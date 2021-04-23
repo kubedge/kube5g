@@ -1,0 +1,102 @@
+oaiCn:
+  v2:
+  - realm:
+      description: "Realm of oai"
+      default: "openair5G.eur"
+    APN_NI:
+      description: |
+        APN of your network. Currently only one API is supported which will replace the default value of 
+        the first api (oai.openair5G.eur) to the defined value
+      default: "oai.ipv4"
+    # imsi:
+    #   description: "List of IMSI to be added to the database with the defualt values of the other parameters like key, opc, etc."
+    #   default: "226100000000001-226100000000003"
+    # # users: list of users to be added to the database if they do not have defualt values of the other parameters like key, opc, etc." 
+    # users:  >-
+    #   [
+    #       {
+    #           "imsi": "226100000000001",
+    #           "apn" : "oai.ipv4",
+    #           "apn2" : "",
+    #           "access_restriction" : 41, 
+    #           "key" : "8baf473f2f8fd09487cccbd7097c6862", 
+    #           "opc" : "8e27b6af0e692e750f32667a3b14605e", 
+    #           "mmehost" : "ubuntu.openair5G.eur",
+    #           "mmerealm" : "openair5G.com", 
+    #           "msisdn" : 33663000021, 
+    #           "rand" : "2683b376d1056746de3b254012908e0e", 
+    #           "sqn" : 21,
+    #           "static_ue_ipv4_allocation": "",
+    #           "static_ue_ipv6_allocation": ""
+    #       },
+    #       {
+    #           "imsi": "226100000000002",
+    #           "apn" : "oai.ipv4",
+    #           "apn2" : "",
+    #           "access_restriction" : 41, 
+    #           "key" : "8baf473f2f8fd09487cccbd7097c6862", 
+    #           "opc" : "8e27b6af0e692e750f32667a3b14605e", 
+    #           "mmehost" : "ubuntu.openair5G.eur", 
+    #           "mmerealm" : "openair5G.com", 
+    #           "msisdn" : 33663000021, 
+    #           "rand" : "2683b376d1056746de3b254012908e0e", 
+    #           "sqn" : 21,
+    #           "static_ue_ipv4_allocation": "",
+    #           "static_ue_ipv6_allocation": ""
+    #       },
+    #       {
+    #           "imsi": "226100000000002",
+    #           "apn" : "oai.ipv4",
+    #           "apn2" : "",
+    #           "access_restriction" : 41, 
+    #           "key" : "8baf473f2f8fd09487cccbd7097c6862", 
+    #           "opc" : "8e27b6af0e692e750f32667a3b14605e", 
+    #           "mmehost" : "ubuntu.openair5G.eur", 
+    #           "mmerealm" : "openair5G.com", 
+    #           "msisdn" : 33663000021, 
+    #           "rand" : "2683b376d1056746de3b254012908e0e", 
+    #           "sqn" : 21,
+    #           "static_ue_ipv4_allocation": "",
+    #           "static_ue_ipv6_allocation": ""
+    #       }
+    #   ]
+    
+    oaiHss:
+      snap:
+        description: "snap of oai-hss"
+        name: "oai-hss"
+        channel: "edge"
+        devmode: true
+        refresh: false
+        plugs: [home, network, desktop, mount-observe, process-control, network-control,
+          network-observe, network-bind]
+      databaseServiceName: "cassandra"
+    oaiMme:
+      snap:
+        description: "snap of oai-mme"
+        name: "oai-mme"
+        channel: "edge"
+        devmode: true
+        refresh: false
+        plugs: [mount-observe, system-backup, process-control, network-control, network-observe,
+          network-bind, network]
+      mcc: "208"
+      mnc: "95"
+    oaiSpgwc:
+      snap:
+        description: "snap of oai-spgwc"
+        name: "oai-spgwc"
+        channel: "edge"
+        devmode: true
+        refresh: false
+        plugs: [log-observe, process-control, network-control, network-observe, network-bind]
+      dns: "8.8.8.8"       # DNS of your network
+    oaiSpgwu:
+      snap:
+        description: "snap of oai-spgwu"
+        name: "oai-spgwu"
+        channel: "edge"
+        devmode: true
+        refresh: false
+        plugs: [log-observe, process-control, firewall-control, network-control, network-observe,
+          network-bind]
