@@ -18,7 +18,7 @@ services:
     networks: # the network this container attached to
     - oai
   oairan:
-    image: "mosaic5gecosys/oairan:v1-1.0-1"
+    image: "mosaic5gecosys/oaienbsim:alpha01"
     restart: always
     container_name: oairan
     hostname: ubuntu
@@ -30,8 +30,20 @@ services:
     - /sys/fs/cgroup:/sys/fs/cgroup:ro
     - /lib/modules:/lib/modules:ro
     - /dev/bus/usb:/dev/bus/usb
-    - ./conf.yaml:/root/config/conf.yaml:ro
+    # - ./conf.yaml:/root/config/conf.yaml:ro
     networks:
+    - oai
+  oaiuesim:
+    image: "mosaic5gecosys/oaiuesim:alpha01"
+    restart: always # Operation Policy
+    container_name: oaiuesim # Name of the container
+    hostname: ubuntu # hostname
+    privileged: true # Give the container the permission to manipulate the host
+    volumes: # Mounted from host
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    - /lib/modules:/lib/modules:ro
+    - ./conf.yaml:/root/config/conf.yaml:ro
+    networks: # the network this container attached to
     - oai
   cassandra:
     image: "mosaic5gecosys/cassandra-m5g:1.1"
