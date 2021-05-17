@@ -25,6 +25,11 @@ COPY ./hook /root/
 RUN mkdir /root/config
 COPY ./conf.yaml /root/config/
 
+## need to change the dns conf in this image:
+## vim /etc/resolv.conf
+## content: 
+### nameserver 8.8.8.8 8.8.4.4 
+
 # Start snapd
 RUN systemctl enable snapd
 
