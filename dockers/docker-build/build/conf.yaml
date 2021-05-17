@@ -8,10 +8,19 @@ oaiEnb:
       Otherwise, it will connect to the service provided by (name)
       If both are provied, "ipv4" will be taked. If none of them is provided, the configuration will skip it and mme will not be configured
       snapVersion: the version of the snap, where the allowed versions are: "v1" and "v2"
-    name: "oaimme"
-    snapVersion: "v1"     # allowed values: v1, v2
+    name: "oaicn"
+    snapVersion: "v2"     # allowed values: v1, v2
     ipv4: ""
-    # "flexRAN" and "flexRANServiceName" will be DEPRECATED, Please use "flexranService"
+  # ueService:
+  #   description: |
+  #     If (ipv4) is provided, the enb connects to UE using the provied ip address. 
+  #     Otherwise, it will connect to the service provided by (name)
+  #     If both are provied, "ipv4" will be taked. If none of them is provided, the configuration will skip it and mme will not be configured
+  #     snapVersion: the version of the snap, where the allowed versions are: "v1" and "v2"
+  #   name: "oaiue"
+  #   snapVersion: "v2"     # allowed values: v1, v2
+  #   ipv4: ""
+  #   # "flexRAN" and "flexRANServiceName" will be DEPRECATED, Please use "flexranService"
   flexRAN: false
   flexRANServiceName: "flexran"
   # flexranService:
@@ -79,11 +88,103 @@ oaiEnb:
     default: "110"
   x2_config:
     description: The X2 interface configuration for the NSA mode.
-    enable_x2: "yes"
+    enable_x2: "no"
     t_reloc_prep: "1000"
     tx2_reloc_overall: "2000"
     t_dc_prep: "1000"
     t_dc_overall: "2000"
+  # Here is the added section
+  MACRLCs:
+  - num_cc:
+      description: ""
+      default: "1"
+    tr_s_preference:
+      description: ""
+      default: "nfapi"
+    tr_n_preference:
+      description: ""
+      default: "local_RRC"
+    # local_s_portc:
+    #   description: ""
+    #   default: "50001"
+    remote_s_portc:
+      description: ""
+      default: "50000"
+    # local_s_portd:
+    #   description: ""
+    #   default: "50011"
+    remote_s_portd:
+      description: ""
+      default: "50010"
+    remote_s_address:
+      description: ""
+      name: "oaiuesim" # this is the name of the container
+      ipv4: ""
+      # default: accepted values are: i) name ii) ipv4
+      # case1: default: name --> get the ip address of the container name defined in the key "name", which is oaienbsim for this example. then add to remote_n_address
+      # case1: default: ipv4 --> get the ip address defined by the key "ipv4", and add it to remote_n_address directly
+      default: "name"
+
+oaiUesim:
+  # EnbService:
+  #   description: |
+  #     If (ipv4) is provided, the enb connects to UE using the provied ip address. 
+  #     Otherwise, it will connect to the service provided by (name)
+  #     If both are provied, "ipv4" will be taked. If none of them is provided, the configuration will skip it and mme will not be configured
+  #     snapVersion: the version of the snap, where the allowed versions are: "v1" and "v2"
+  #   name: "oairan"
+  #   snapVersion: "v2"     # allowed values: v1, v2
+  #   ipv4: ""
+- L1s:
+    - num_cc:
+        description: ""
+        default: "10"
+      tr_n_preference:
+        description: ""
+        default: "nfapi1"
+      #############
+      remote_n_address:
+        description: ""
+        # name: "oaienbsim"  # this is the name of the container
+        # ipv4: ""
+        # # default: accepted values are: i) name ii) ipv4
+        # # case1: default: name --> get the ip address of the container name defined in the key "name", which is oaienbsim for this example. then add to remote_n_address
+        # # case1: default: ipv4 --> get the ip address defined by the key "ipv4", and add it to remote_n_address directly
+        default: "192.168.0.5"
+      #############
+      # REMOVE local_n_address, NO NEED FOR IT
+      # local_n_address: not needed as this is the ip address of the container, so we can get it locally
+      # local_n_address:
+      #   description: ""
+      #   default: "2.2.2.2"
+      local_n_portc:
+        description: ""
+        default: "50000"
+      remote_n_portc:
+        description: ""
+        default: "50001"
+      local_n_portd:
+        description: ""
+        default: "50010"
+      remote_n_portd:
+        description: ""
+        default: "50011"
+  RUs:
+    - max_rxgain: 
+        description: ""
+        default: "125"
+      bands: 
+        description: ""
+        default: "[7,38,42,43]"
+  snap:
+    description: |
+      Define the version of the snap to be used. The field (refresh), if true, it will get the lates version of snap. 
+      Otherwise, the current version (supposing that it is already installed) will be kept
+    name: "oai-sim"
+    channel: "stable"
+    devmode: false
+    refresh: false
+    plugs: [network-control, log-observe, process-control, netlink-connector]
     
 oaiGnb:
   - nodeFunction: "gnb"
@@ -107,7 +208,7 @@ oaiGnb:
         Otherwise, it will connect to the service provided by 'name'  
         If both are provied, "ipv4" will be taked. If none of them is provided, the configuration will skip it and mme will not be configured
         snapVersion: the version of the snap, where the allowed versions are: "v1" and "v2"
-      snapVersion: "v1" # allowed values: v1, v2
+      snapVersion: "v2" # allowed values: v1, v2
       name: "oaimme"
       ipv4: ""
       ipv6: ""

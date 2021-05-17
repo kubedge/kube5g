@@ -71,6 +71,7 @@ init() {
 # Recreate base image
 build_base(){
     cd ../${DIR}/
+    echo "WHERE we are : ${PWD}"
     cp ../build/hook ./
     cp ../build/conf.yaml ./
     docker build -t ${TARGET}:${TAG_BASE} --force-rm=true --rm=true .  |& tee build.log
@@ -105,6 +106,7 @@ build_target(){
             
             if [ "${1}" = "oai-hss" ] || [ "${1}" = "oai-mme" ] || [ "${1}" = "oai-spgwc" ] || [ "${1}" = "oai-spgwu" ] || [ "${1}" = "oai-ran" ] || [ "${1}" = "oai-sim" ] ; then
                 echo "Waiting for snap ${1} to be installed..."
+                echo "current list : ${LIST}"
                 contains "${LIST}" "${1}"
             elif [ "${1}" = "oai-cn" ] ; then
                 echo "Waiting for snaps oai-hss, oai-mme, oai-spgwc, oai-spgwu to be installed..."
@@ -232,6 +234,11 @@ main() {
             TARGET_NAME="oaienbsim"
             build_target "oai-sim"
         ;;
+        oai-ue-sim)
+            DIR="oai-ue-sim"
+            TARGET_NAME="oaiuesim"
+            build_target "oai-sim"
+        ;;
         oai-gnb)
             DIR="oai-gnb"
             TARGET_NAME="oaignb"
@@ -261,7 +268,7 @@ main() {
 Description:
 This Script will remove the old docker snap image and build a new one
 Usage:
-        ./build.sh [oai-cn|oai-hss|oai-mme|oai-spgw|oai-ran|oai-enb-sim|flexran|ll-mec] [release tag(default is latest)] [snap version(default is v1. alowed values: v1, v2)]
+        ./build.sh [oai-cn|oai-hss|oai-mme|oai-spgw|oai-ran|oai-enb-sim|oai-ue-sim|flexran|ll-mec] [release tag(default is latest)] [snap version(default is v1. alowed values: v1, v2)]
 Example:
         ./build.sh oai-cn mytestv1 v1
 '
