@@ -211,6 +211,16 @@ func InstallRAN(OaiObj Oai) {
 	fmt.Println("RAN RAN is installed")
 }
 
+func InstallUESim(OaiObj Oai) {
+
+	// Install oai-ran snap
+	OaiObj.Logger.Print("Installing UESim")
+	fmt.Println("Installing UESim")
+	installOaiUESim(OaiObj)
+	OaiObj.Logger.Print("UESim is installed")
+	fmt.Println("UESim is installed")
+}
+
 //InstallRanGnb is a wrapper for installing OAI RAN
 func InstallRanGnb(OaiObj Oai) {
 
@@ -242,6 +252,17 @@ func StartENB(OaiObj Oai, buildSnap bool) {
 		OaiObj.Logger.Print("4G RAN is started")
 		fmt.Println("4G RAN is started")
 	}
+
+}
+
+func StartUESim(OaiObj Oai, buildSnap bool) {
+	OaiObj.Logger.Print("Starting UE Sim")
+	fmt.Println("Starting UE Sim")
+
+	startUESim(OaiObj, buildSnap)
+
+	OaiObj.Logger.Print("UE Sim is started")
+	fmt.Println("UE Sim is started")
 
 }
 
