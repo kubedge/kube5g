@@ -35,6 +35,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"mosaic5g/docker-hook/internal/pkg/common"
 	"mosaic5g/docker-hook/internal/pkg/util"
 	"net"
@@ -55,6 +56,73 @@ func changeParamNidCellMbsfn(c *common.CfgGlobal, OaiObj Oai, enbConf string) in
 	// OaiObj.Logger.Print(sedCommand)
 	retStatus := util.RunCmd(OaiObj.Logger, "sed", "-i", sedCommand, enbConf)
 	return retStatus.Exit
+}
+
+func AttemptGetIPFromDomain(logger *log.Logger, domain string) (string, error) {
+	for i := 0; i < 100; i++ {
+		ueIP, err := util.GetIPFromDomain(logger, domain)
+		if err == nil {
+			return ueIP, err
+		}
+
+		time.Sleep(500 * time.Millisecond)
+		if i == 100 {
+			return "", err
+		}
+	}
+	// never reach this point
+	// added to satify the syntax
+	return "", nil
+}
+
+// input: GetIPGivenNameAndIP( OaiObj.Logger, mmeServiceName, mmeIPV4Customized, mmeSnapVersion)
+
+func GetIPGivenNameAndIP(logger *log.Logger, domain string, givenIP string, snapVersion string) string {
+	finalIP := ""
+	if (domain == "") && (givenIP == "") {
+		//skip configuring mme as there is nothing specified
+		if snapVersion == "v1" {
+			finalIP = "127.0.1.10"
+		} else {
+			finalIP = "127.0.1.1"
+		}
+	} else if givenIP != "" {
+		finalIP = givenIP
+	} else if domain != "" {
+		finalIP, err := util.GetIPFromDomain(logger, domain)
+		logger.Print("err = ", err)
+		logger.Print("mmeIP = ", finalIP)
+		for i := 0; i < 100; i++ {
+			if err != nil {
+				logger.Print(err)
+			} else {
+				hostNameMme, err := net.LookupHost(finalIP)
+				logger.Print("err = ", err)
+				logger.Print("hostNameMme = ", hostNameMme)
+				if len(hostNameMme) > 0 {
+					// time.Sleep(3 * time.Second)
+					return finalIP
+				} else {
+					logger.Print(err)
+				}
+			}
+			logger.Print("Valid ip address for oai-mme not get retreived")
+			time.Sleep(1 * time.Second)
+			finalIP, err = AttemptGetIPFromDomain(logger, domain)
+
+			if i == 99 {
+				logger.Print("Cannot get a valid ip address for oai-mme. Quit!!")
+				return ""
+			}
+		}
+		return ""
+
+	} else {
+		// both mmeServiceName and mmeIPV4Customized are defined, thus, the privilige is for mmeIPV4Customized
+		finalIP = givenIP
+		logger.Print("get finalIP = ", finalIP)
+	}
+	return finalIP
 }
 
 func startENB(OaiObj Oai, buildSnap bool) error {
@@ -230,7 +298,7 @@ func startENB(OaiObj Oai, buildSnap bool) error {
 	util.RunCmd(OaiObj.Logger, "sed", "-i", sedCommand, enbConf)
 
 	// Set up FlexRAN
-	if buildSnap == false {
+	if !buildSnap {
 		var flexranIP, flexranIface, flexranPort string = "", "", ""
 		var flexranEnabled bool = false
 
@@ -310,16 +378,43 @@ func startENB(OaiObj Oai, buildSnap bool) error {
 	sedCommand = "s:max_rxgain.*;:max_rxgain     = " + c.OaiEnb[0].MaxRxGain.Default + ";:g"
 	util.RunCmd(OaiObj.Logger, "sed", "-i", sedCommand, enbConf)
 
-	// Get the IP address of oai-mme
-	mmeServiceName := OaiObj.Conf.OaiEnb[0].MmeService.Name
-	mmeIPV4Customized := OaiObj.Conf.OaiEnb[0].MmeService.IPV4
-	mmeSnapVersion := OaiObj.Conf.OaiEnb[0].MmeService.SnapVersion
-
-	OaiObj.Logger.Println("mme Name: " + mmeServiceName)
-	OaiObj.Logger.Println("mme IPv4: " + mmeIPV4Customized)
-	OaiObj.Logger.Println("mme Name: " + mmeSnapVersion)
-
 	if !buildSnap {
+
+		if strings.Contains(nodeFunction, "sim") {
+			// this is enb sim
+			// support
+			sedCommand = "s:local_s_if_name.*;:local_s_if_name                 = \"" + outInterface + "\";:g"
+			util.RunCmd(OaiObj.Logger, "sed", "-i", sedCommand, enbConf)
+
+			// support
+			sedCommand = "s:local_n_address.*;:local_n_address                 = \"" + outIP + "\";:g"
+			util.RunCmd(OaiObj.Logger, "sed", "-i", sedCommand, enbConf)
+
+			// get the IP for the UE ip address and set into the conf file
+			// ueIP, err := AttemptGetIPFromDomain(OaiObj.Logger, OaiObj.Conf.OaiEnb[0].UeService.Name)
+
+			// for ue, snap version doesn't matter.
+			ueIP := GetIPGivenNameAndIP(OaiObj.Logger,
+				OaiObj.Conf.OaiEnb[0].MACRLCs[0].RemoteSAddress.Name,
+				OaiObj.Conf.OaiEnb[0].MACRLCs[0].RemoteSAddress.Ipv4,
+				"v2",
+			)
+			sedCommand = "202s:\".*;:\"" + ueIP + "\";:g"
+			if ueIP == "" {
+				OaiObj.Logger.Fatalln("Can not get IP address for ue with name = ", ueIP)
+			} else {
+				util.RunCmd(OaiObj.Logger, "sed", "-i", sedCommand, enbConf)
+			}
+		}
+
+		// Get the IP address of oai-mme
+		mmeServiceName := OaiObj.Conf.OaiEnb[0].MmeService.Name
+		mmeIPV4Customized := OaiObj.Conf.OaiEnb[0].MmeService.IPV4
+		mmeSnapVersion := OaiObj.Conf.OaiEnb[0].MmeService.SnapVersion
+
+		OaiObj.Logger.Println("mme Name: " + mmeServiceName)
+		OaiObj.Logger.Println("mme IPv4: " + mmeIPV4Customized)
+		OaiObj.Logger.Println("mme Name: " + mmeSnapVersion)
 
 		if c.OaiEnb[0].Usrp.N3xx.Enabled {
 			firstAdd := c.OaiEnb[0].Usrp.N3xx.SdrAddrs.Addr
@@ -445,44 +540,9 @@ func startENB(OaiObj Oai, buildSnap bool) error {
 				}
 			}
 		}
-		mmeIP, err := util.GetIPFromDomain(OaiObj.Logger, mmeServiceName)
 
-		if (mmeServiceName == "") && (mmeIPV4Customized == "") {
-			//skip configuring mme as there is nothing specified
-			if mmeSnapVersion == "v1" {
-				mmeIP = "127.0.1.10"
-			} else {
-				mmeIP = "127.0.1.1"
-			}
-		} else if mmeIPV4Customized != "" {
-			mmeIP = mmeIPV4Customized
-		} else if mmeServiceName != "" {
-			mmeIP, err = util.GetIPFromDomain(OaiObj.Logger, mmeServiceName)
-			OaiObj.Logger.Print("err = ", err)
-			OaiObj.Logger.Print("mmeIP = ", mmeIP)
-			for {
-				if err != nil {
-					OaiObj.Logger.Print(err)
-				} else {
-					hostNameMme, err := net.LookupHost(mmeIP)
-					OaiObj.Logger.Print("err = ", err)
-					OaiObj.Logger.Print("hostNameMme = ", hostNameMme)
-					if len(hostNameMme) > 0 {
-						// time.Sleep(3 * time.Second)
-						break
-					} else {
-						OaiObj.Logger.Print(err)
-					}
-				}
-				OaiObj.Logger.Print("Valid ip address for oai-mme not get retreived")
-				time.Sleep(1 * time.Second)
-				mmeIP, err = util.GetIPFromDomain(OaiObj.Logger, mmeServiceName)
-			}
-		} else {
-			// both mmeServiceName and mmeIPV4Customized are defined, thus, the privilige is for mmeIPV4Customized
-			mmeIP = mmeIPV4Customized
-			OaiObj.Logger.Print("mmeIP = mmeIPV4Customized")
-		}
+		// TODO : fill the get ip function here.
+		mmeIP := GetIPGivenNameAndIP(OaiObj.Logger, mmeServiceName, mmeIPV4Customized, mmeSnapVersion)
 		OaiObj.Logger.Print("mmeServiceName = ", mmeServiceName)
 		OaiObj.Logger.Print("mmeIPV4Customized = ", mmeIPV4Customized)
 		OaiObj.Logger.Print("mmeIP = ", mmeIP)
@@ -597,6 +657,11 @@ func startENB(OaiObj Oai, buildSnap bool) error {
 				}
 			}
 		}
+
+		OaiObj.Logger.Print("Enable IP v6")
+		retStatus = util.RunCmd(OaiObj.Logger, "sysctl", "-w", "net.ipv6.conf.all.disable_ipv6=0")
+		retStatus = util.RunCmd(OaiObj.Logger, "sysctl", "-w", "net.ipv6.conf.default.disable_ipv6=0")
+
 		OaiObj.Logger.Print("Start enb daemon")
 
 		if mmeSnapVersion == "v2" {
