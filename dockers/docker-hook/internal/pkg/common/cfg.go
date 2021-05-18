@@ -70,6 +70,13 @@ type CfgOaiEnb struct {
 		SnapVersion string `yaml:"snapVersion"`
 		IPV4        string `yaml:"ipv4"`
 	} `yaml:"mmeService"`
+	// UeService struct {
+	// 	Description string `yaml:"description"`
+	// 	Name        string `yaml:"name"`
+	// 	SnapVersion string `yaml:"snapVersion"`
+	// 	IPV4        string `yaml:"ipv4"`
+	// } `yaml:"ueService"`
+	MACRLCs        []MACRLC `yaml:"MACRLCs"`
 	FlexranService struct {
 		Description   string `yaml:"description"`
 		Enabled       bool   `yaml:"enabled"`
@@ -150,6 +157,55 @@ type CfgOaiEnb struct {
 		TDCPrep         string `yaml:"t_dc_prep"`
 		TDCOverall      string `yaml:"t_dc_overall"`
 	} `yaml:"x2_config"`
+}
+
+// support for enb
+// RemoteSPortc
+type RemoteSPortc struct {
+	Description string `yaml:"description"`
+	Default     string `yaml:"default"`
+}
+
+// RemoteSPortd
+type RemoteSPortd struct {
+	Description string `yaml:"description"`
+	Default     string `yaml:"default"`
+}
+
+// RemoteSAddress
+type RemoteSAddress struct {
+	Description string `yaml:"description"`
+	Name        string `yaml:"name"`
+	Ipv4        string `yaml:"ipv4"`
+	Default     string `yaml:"default"`
+}
+
+// MACRLCs
+type MACRLC struct {
+	NumCc          NumCc          `yaml:"num_cc"`
+	TrSPreference  TrSPreference  `yaml:"tr_s_preference"`
+	TrNPreference  TrNPreference  `yaml:"tr_n_preference"`
+	RemoteSPortc   RemoteSPortc   `yaml:"remote_s_portc"`
+	RemoteSPortd   RemoteSPortd   `yaml:"remote_s_portd"`
+	RemoteSAddress RemoteSAddress `yaml:"remote_s_address"`
+}
+
+// NumCc
+type NumCc struct {
+	Description string `yaml:"description"`
+	Default     string `yaml:"default"`
+}
+
+// TrSPreference
+type TrSPreference struct {
+	Description string `yaml:"description"`
+	Default     string `yaml:"default"`
+}
+
+// TrNPreference
+type TrNPreference struct {
+	Description string `yaml:"description"`
+	Default     string `yaml:"default"`
 }
 
 // CfgOaiGnb  the configuration of oai-gnb
@@ -332,6 +388,67 @@ type CfgSpgwuGlobal struct {
 	V2 []CfgSpgwuV2 `json:"v2" yaml:"v2"`
 }
 
+//cfgUESimGlobal CfgGlobal
+type CfgUESimGlobal struct {
+	L1s  []CfgL1s             `json:"L1s" yaml:"L1s"`
+	RUs  []CfgRUs             `json:"RUs" yaml:"RUs"`
+	Snap SnapDescriptionFinal `json:"snap" yaml:"snap"`
+}
+
+type CfgRUs struct {
+	MaxRxGain struct {
+		Description string `yaml:"description"`
+		Default     string `yaml:"default"`
+	} `yaml:"max_rxgain"`
+
+	Bands struct {
+		Description string `yaml:"description"`
+		Default     string `yaml:"default"`
+	} `yaml:"bands"`
+}
+
+type CfgL1s struct {
+	NumCC struct {
+		Description string `yaml:"description"`
+		Default     string `yaml:"default"`
+	} `yaml:"num_cc"`
+
+	TrNPreference struct {
+		Description string `yaml:"description"`
+		Default     string `yaml:"default"`
+	} `yaml:"tr_n_preference"`
+
+	// LocalNPortc struct {
+	// 	Description string `yaml:"description"`
+	// 	Default     string `yaml:"default"`
+	// } `yaml:"local_n_portc"`
+
+	RemoteNPortc struct {
+		Description string `yaml:"description"`
+		Default     string `yaml:"default"`
+	} `yaml:"remote_n_portc"`
+
+	// LocalNPortd struct {
+	// 	Description string `yaml:"description"`
+	// 	Default     string `yaml:"default"`
+	// } `yaml:"local_n_portd"`
+
+	RemoteNPortd struct {
+		Description string `yaml:"description"`
+		Default     string `yaml:"default"`
+	} `yaml:"remote_n_portd"`
+	// remote_n_address = "127.0.16.2";
+	RemoteNAddress struct {
+		Description string `yaml:"description"`
+		Default     string `yaml:"default"`
+	} `yaml:"remote_n_address"`
+	// local_n_address  = "127.0.16.1";
+	// LocalNAddress struct {
+	// 	Description string `yaml:"description"`
+	// 	Default     string `yaml:"default"`
+	// } `yaml:"local_n_address"`
+}
+
 // CfgCnV1 the configuration of flexran
 type CfgCnV1 struct {
 	Realm struct {
@@ -387,16 +504,17 @@ type CfgCnGlobal struct {
 
 // CfgGlobal CfgGlobal
 type CfgGlobal struct {
-	OaiEnb   []CfgOaiEnb    `json:"oaiEnb" yaml:"oaiEnb"`
-	OaiGnb   []CfgOaiGnb    `json:"oaiGnb" yaml:"oaiGnb"`
-	Flexran  []CfgFlexran   `json:"flexran" yaml:"flexran"`
-	LlMec    []CfgLlMec     `json:"llmec" yaml:"llmec"`
-	OaiCn    CfgCnGlobal    `json:"oaiCn" yaml:"oaiCn"`
-	OaiHss   CfgHssGlobal   `json:"oaiHss" yaml:"oaiHss"`
-	OaiMme   CfgMmeGlobal   `json:"oaiMme" yaml:"oaiMme"`
-	OaiSpgw  CfgSpgwGlobal  `json:"oaiSpgw" yaml:"oaiSpgw"`
-	OaiSpgwc CfgSpgwcGlobal `json:"oaiSpgwc" yaml:"oaiSpgwc"`
-	OaiSpgwu CfgSpgwuGlobal `json:"oaiSpgwu" yaml:"oaiSpgwu"`
+	OaiEnb   []CfgOaiEnb      `json:"oaiEnb" yaml:"oaiEnb"`
+	OaiGnb   []CfgOaiGnb      `json:"oaiGnb" yaml:"oaiGnb"`
+	Flexran  []CfgFlexran     `json:"flexran" yaml:"flexran"`
+	LlMec    []CfgLlMec       `json:"llmec" yaml:"llmec"`
+	OaiCn    CfgCnGlobal      `json:"oaiCn" yaml:"oaiCn"`
+	OaiHss   CfgHssGlobal     `json:"oaiHss" yaml:"oaiHss"`
+	OaiMme   CfgMmeGlobal     `json:"oaiMme" yaml:"oaiMme"`
+	OaiSpgw  CfgSpgwGlobal    `json:"oaiSpgw" yaml:"oaiSpgw"`
+	OaiSpgwc CfgSpgwcGlobal   `json:"oaiSpgwc" yaml:"oaiSpgwc"`
+	OaiSpgwu CfgSpgwuGlobal   `json:"oaiSpgwu" yaml:"oaiSpgwu"`
+	OaiUesim []CfgUESimGlobal `json:"oaiUesim" yaml:"oaiUesim"`
 }
 
 // SnapDescriptionFinal this type is to descripe the details of the snap to be used for the current application
