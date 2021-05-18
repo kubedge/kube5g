@@ -1,0 +1,62 @@
+Sending build context to Docker daemon  7.984MB
+Step 1/20 : FROM ubuntu:16.04
+ ---> f6f49faac5cf
+Step 2/20 : LABEL maintainer="Osama Arouk (arouk@eurecom.fr)"
+ ---> Using cache
+ ---> 221f978690ea
+Step 3/20 : ENV container docker
+ ---> Using cache
+ ---> 3fa9f1182a8b
+Step 4/20 : ENV PATH "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
+ ---> Using cache
+ ---> 6d75114bbe75
+Step 5/20 : ENV LANG C.UTF-8
+ ---> Using cache
+ ---> 8e42e3e2b2ae
+Step 6/20 : ENV LC_ALL C.UTF-8
+ ---> Using cache
+ ---> 5b750d9fc9e0
+Step 7/20 : RUN echo exit 0 > /usr/sbin/policy-rc.d
+ ---> Using cache
+ ---> 178b5e4fcdd2
+Step 8/20 : RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y fuse snapd snap-confine squashfuse iproute2 sudo && apt-get autoremove -y && apt-get autoclean -y && dpkg-divert --local --rename --add /sbin/udevadm && ln -s /bin/true /sbin/udevadm
+ ---> Using cache
+ ---> 20bf6c28b7ce
+Step 9/20 : RUN apt-get install -y apt-utils dnsutils net-tools iputils-ping vim curl jq
+ ---> Using cache
+ ---> fe73eb2c70b8
+Step 10/20 : RUN sed -i "13s/^/\/root\/init.sh/g" /etc/rc.local
+ ---> Using cache
+ ---> c684942aa160
+Step 11/20 : RUN chmod +x /etc/rc.local
+ ---> Using cache
+ ---> 2ef005931593
+Step 12/20 : COPY ./init_build.sh /root/init.sh
+ ---> Using cache
+ ---> 263c83e22fae
+Step 13/20 : COPY ./init_deploy.sh /root/
+ ---> Using cache
+ ---> c36e8b51950f
+Step 14/20 : COPY ./hook /root/
+ ---> Using cache
+ ---> ddc12f7e4974
+Step 15/20 : RUN mkdir /root/config
+ ---> Using cache
+ ---> a0e20ce551f8
+Step 16/20 : COPY ./conf.yaml /root/config/
+ ---> Using cache
+ ---> e5dc5a496e3a
+Step 17/20 : RUN systemctl enable snapd
+ ---> Using cache
+ ---> 16bbccc6b719
+Step 18/20 : RUN rm -f /lib/systemd/system/systemd*udev*   && rm -f /lib/systemd/system/getty.target
+ ---> Using cache
+ ---> d31bcf6de341
+Step 19/20 : VOLUME ["/sys/fs/cgroup"]
+ ---> Using cache
+ ---> 5509f5540b76
+Step 20/20 : CMD ["/sbin/init"]
+ ---> Using cache
+ ---> 1cf3a0dc44d1
+Successfully built 1cf3a0dc44d1
+Successfully tagged mosaic5gecosys/oaiuesim:base
