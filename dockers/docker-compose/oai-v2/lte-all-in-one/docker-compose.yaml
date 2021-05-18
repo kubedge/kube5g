@@ -42,7 +42,7 @@ services:
     volumes: # Mounted from host
     - /sys/fs/cgroup:/sys/fs/cgroup:ro
     - /lib/modules:/lib/modules:ro
-    - ./conf.yaml:/root/config/conf.yaml:ro
+    # - ./conf.yaml:/root/config/conf.yaml:ro
     networks: # the network this container attached to
     - oai
   cassandra:
