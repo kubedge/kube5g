@@ -1,0 +1,4 @@
+## Append samples of your project ##
+resources:
+- mosaic5g_v1alpha1_mosaic5g.yaml
+# +kubebuilder:scaffold:manifestskustomizesamples
