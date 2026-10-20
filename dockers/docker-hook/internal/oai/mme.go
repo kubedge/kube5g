@@ -2,7 +2,7 @@ package oai
 
 import (
 	"errors"
-	"docker-hook/internal/pkg/util"
+	"github.com/kubedge/kube5g/dockers/docker-hook/internal/pkg/util"
 	"os"
 )
 
@@ -36,7 +36,7 @@ func startMme(OaiObj Oai) error {
 		return errors.New("Set interface IP in " + mmeConf + " failed")
 	}
 	// Configure interface name
-	outInterface,_ := util.GetInterfaceByIP(outInterfaceIP)
+	outInterface, _ := util.GetInterfaceByIP(outInterfaceIP)
 	sedCommand = "153s/lo/" + outInterface + "/g"
 	retStatus = util.RunCmd(OaiObj.Logger, "sed", "-i", sedCommand, mmeConf)
 	if retStatus.Exit != 0 {

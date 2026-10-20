@@ -1,8 +1,8 @@
 package oai
 
 import (
+	"github.com/kubedge/kube5g/dockers/docker-hook/internal/pkg/common"
 	"log"
-	"docker-hook/internal/pkg/common"
 	"os"
 	"time"
 )

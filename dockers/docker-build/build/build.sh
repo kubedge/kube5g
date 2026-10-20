@@ -52,9 +52,9 @@ contains() {
 build_hook(){
     echo "build hook from source"
     NOW=`pwd`
-    cd ${GOPATH}/src/oai-snap-in-docker/cmd/hook/
-    go build 
-    mv ./hook ${NOW}/
+    # The images are Ubuntu x86-64; build a static binary so it runs there.
+    (cd "$(dirname "$0")/../../docker-hook" && \
+        CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -o "${NOW}/hook" ./cmd/hook)
 }
 
 # Set variables
@@ -68,7 +68,7 @@ build_base(){
     cd ../${DIR}/
     cp ../build/hook ./
     cp ../build/conf.yaml ./
-    docker build -t ${TARGET}:${TAG_BASE} --force-rm=true --rm=true .  |& tee build.log
+    docker build -t ${TARGET}:${TAG_BASE} --force-rm=true --rm=true .  2>&1 | tee build.log
     clean_up
 }
 

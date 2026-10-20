@@ -1,7 +1,7 @@
 package oai
 
 import (
-	"docker-hook/internal/pkg/util"
+	"github.com/kubedge/kube5g/dockers/docker-hook/internal/pkg/util"
 	"time"
 )
 

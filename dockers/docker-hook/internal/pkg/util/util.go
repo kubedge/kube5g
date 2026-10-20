@@ -27,7 +27,7 @@ func RunCmd(logger *log.Logger, cmdName string, args ...string) cmd.Status {
 	return finalStatus
 }
 
-//CheckSnapPackageExist will return if this package is already exist or not
+// CheckSnapPackageExist will return if this package is already exist or not
 func CheckSnapPackageExist(logger *log.Logger, packageName string) (bool, error) {
 	if len(packageName) <= 0 {
 		return false, errors.New("Input package name is empty")
@@ -47,7 +47,7 @@ func CheckSnapPackageExist(logger *log.Logger, packageName string) (bool, error)
 	return false, nil
 }
 
-//GetInterfaceIP will get the ip of the interface. If failed, it'll return a default (127.0.1.10) value
+// GetInterfaceIP will get the ip of the interface. If failed, it'll return a default (127.0.1.10) value
 func GetInterfaceIP(logger *log.Logger, interfaceName string) (string, error) {
 	ret := RunCmd(logger, "ifconfig", interfaceName)
 	if ret.Exit != 0 {
@@ -67,7 +67,7 @@ func GetInterfaceIP(logger *log.Logger, interfaceName string) (string, error) {
 	return ret.Stdout[1][20 : 27+i+1], nil
 }
 
-//GetIPFromDomain will get the IP of the domain
+// GetIPFromDomain will get the IP of the domain
 func GetIPFromDomain(logger *log.Logger, domain string) (string, error) {
 	addr, err := net.LookupHost(domain)
 	if err != nil {

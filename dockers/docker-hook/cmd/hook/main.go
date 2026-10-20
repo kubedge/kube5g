@@ -4,9 +4,9 @@ package main
 // handle the configurations
 // Author: Kevin Hsi-Ping Hsu
 import (
-	"docker-hook/internal/oai"
 	"flag"
 	"fmt"
+	"github.com/kubedge/kube5g/dockers/docker-hook/internal/oai"
 )
 
 const (

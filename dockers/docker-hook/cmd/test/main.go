@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"reflect"
 
 	"gopkg.in/yaml.v2"
@@ -37,7 +37,7 @@ type conf struct {
 
 func (c *conf) getConf() *conf {
 
-	yamlFile, err := ioutil.ReadFile("conf.yaml")
+	yamlFile, err := os.ReadFile("conf.yaml")
 
 	if err != nil {
 		log.Printf("yamlFile.Get err   #%v ", err)

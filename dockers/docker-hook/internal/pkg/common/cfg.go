@@ -2,8 +2,8 @@ package common
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"reflect"
 	"strconv"
 
@@ -38,7 +38,7 @@ type Cfg struct {
 // GetConf : read yaml into struct
 func (c *Cfg) GetConf(logger *log.Logger, path string) error {
 	//Read yaml here
-	yamlFile, err := ioutil.ReadFile(path)
+	yamlFile, err := os.ReadFile(path)
 	if err != nil {
 		logger.Println(err.Error())
 		return err

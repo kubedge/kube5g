@@ -3,7 +3,7 @@ package oai
 import (
 	"errors"
 	"fmt"
-	"docker-hook/internal/pkg/util"
+	"github.com/kubedge/kube5g/dockers/docker-hook/internal/pkg/util"
 	"os"
 	"strings"
 )
